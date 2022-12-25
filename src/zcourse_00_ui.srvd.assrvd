@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service'
+define service ZCourse_00_UI {
+  expose ZC_Course_00 as Course;
+  expose ZC_SCHEDULE_00 as Schedule;
+}

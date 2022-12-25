@@ -1,0 +1,78 @@
+managed implementation in class zbp_i_course_00 unique;
+
+with draft;
+
+define behavior for ZI_Course_00 alias Course
+persistent table zcourse_00
+draft table zcourse_00d
+lock master
+total etag LastChangedAt
+etag master LocalLastChangedAt
+authorization master ( instance )
+{
+create;
+update;
+delete;
+
+action ( features : instance ) set_block;
+//action  set_block ;
+
+field ( numbering : managed, readonly ) CourseUuid;
+field ( readonly ) Country;
+field ( readonly : update ) CourseId;
+field ( mandatory : create ) CourseId, CourseName;
+
+field ( features : instance ) CourseName, Price, CurrencyCode, Blocked;
+
+validation checkRequired on save { create; update; }
+
+determination set_country on save { create; }
+
+association _Schedule { create; with draft;}
+
+mapping for ZCourse_00 corresponding
+{
+  CourseUuid = course_uuid;
+  CourseId = course_id;
+  CourseName = course_name;
+  //   Price         = price;
+  CurrencyCode = currency_code;
+  //   Country       = country;
+  //   Blocked       = blocked;
+  LastChangedAt = last_changed_at;
+  LastChangedBy = last_changed_by;
+  LocalLastChangedAt = local_last_changed_at;
+}
+}
+
+define behavior for ZI_Schedule_00 alias Schedule
+persistent table zschedule_00
+draft table zschedule_00d
+lock dependent by _Course
+authorization dependent by _Course
+etag master LocalLastChangedAt
+{
+   update;
+   delete;
+
+   field ( numbering : managed, readonly ) ScheduleUuid;
+   field ( readonly ) CourseUuid;
+
+   association _Course { with draft; }
+
+   mapping for ZSchedule_00 corresponding
+    {
+      ScheduleUuid = schedule_uuid;
+      CourseUuid = course_uuid;
+
+      CourseBegin = course_begin;
+      Location = location;
+      Trainer = trainer;
+      IsOnline = is_online;
+
+      LastChangedAt = last_changed_at;
+      LastChangedBy = last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+
+}
